@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
-    let emojis: [String] = ["💀", "👻", "🎃", "🕷️", "🕸️", "🐦‍⬛", "🐊", "🦂", "🐍", "🦖"]
-
-    @State var cardCount = 4
+    let spaceEmojis: [String] = ["🔭", "🪐", "☄️", "🛸", "👽", "🛰️", "🌎", "🚀", "🧑‍🚀", "👾"]
+    let scarryEmojis: [String] = ["💀", "👻", "🎃", "🕷️", "🕸️", "🐦‍⬛", "🦂"]
+    let vechicleEmojis: [String] = ["✈️", "🛵", "⛴️", "⛵️", "🏎️"]
+    
+    @State var emojis: [String] = []
+    
     var body: some View {
+        Text("Memorize").font(.largeTitle)
         VStack{
             ScrollView{
                 cards
@@ -21,29 +25,36 @@ struct ContentView: View {
         }
         .padding()
     }
-    
+   
     var cardButtons: some View {
         HStack{
-            cardRemover
+            buttonSpaceTheme
             Spacer()
-            cardAdder
+            buttonScarryTheme
+            Spacer()
+            buttonVehicleTheme
         }
         .imageScale(.large)
         .font(.largeTitle)
+        
     }
     
-    func cardCountAjuster(by offset : Int, symbol: String) -> some View {
+    func themeButtonAction(theme: String, symbol: String, emojis themedEmojies: [String])-> some View{
         Button(action: {
-                cardCount += offset
+            var duplicatedEmojis = themedEmojies + themedEmojies
+            duplicatedEmojis.shuffle()
+            emojis = duplicatedEmojis
         }, label: {
-            Image(systemName: symbol)
+            VStack{
+                Image(systemName: symbol)
+                Text(theme).font(.caption)
+            }
         })
-        .disabled(cardCount - offset < 1 || cardCount + offset > emojis.count)
     }
     
     var cards: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))]){
-            ForEach(0..<cardCount, id: \.self) { index in
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 68))]){
+            ForEach(0..<emojis.count, id: \.self) { index in
                 CardView(content: emojis[index])
                     .aspectRatio(2/3, contentMode: .fit)
             }
@@ -51,18 +62,47 @@ struct ContentView: View {
         .foregroundColor(.orange)
     }
     
-    var cardRemover: some View {
-        cardCountAjuster(by: -1, symbol: "rectangle.stack.fill.badge.minus")
+    var buttonSpaceTheme: some View {
+        themeButtonAction(theme: "Space", symbol: "star.fill", emojis: spaceEmojis)
     }
+    var buttonScarryTheme: some View {
+        themeButtonAction(theme: "Scarry", symbol: "moon.stars.fill", emojis: scarryEmojis)
+    }
+    var buttonVehicleTheme: some View {
+        themeButtonAction(theme: "Vehicle", symbol: "car.fill", emojis: vechicleEmojis)
+    }
+
+//    var cardButtons: some View {
+//        HStack{
+//            cardRemover
+//            Spacer()
+//            cardAdder
+//        }
+//        .imageScale(.large)
+//        .font(.largeTitle)
+//    }
+        
+//    func cardCountAjuster(by offset : Int, symbol: String) -> some View {
+//        Button(action: {
+//                cardCount += offset
+//        }, label: {
+//            Image(systemName: symbol)
+//        })
+//        .disabled(cardCount - offset < 1 || cardCount + offset > emojis.count)
+//    }
     
-    var cardAdder: some View {
-        cardCountAjuster(by: +1, symbol: "rectangle.stack.fill.badge.plus")
-    }
+//    var cardRemover: some View {
+//        cardCountAjuster(by: -1, symbol: "rectangle.stack.fill.badge.minus")
+//    }
+//    
+//    var cardAdder: some View {
+//        cardCountAjuster(by: +1, symbol: "rectangle.stack.fill.badge.plus")
+//    }
 }
 
 struct CardView: View {
     let content: String
-    @State var isFaceUp = true //Temporary state
+    @State var isFaceUp = false //Temporary state
 
     var body: some View {
         ZStack {
